@@ -10,7 +10,7 @@ export interface IPlace {
   description: string;
   capacity: number;
   imageSrc: string;
-  createdAt: Date;
+  createdAt: number;
   type: PlaceType;
 }
 
@@ -21,7 +21,7 @@ const FAKE_DATA: IPlace[] = [
     description: '',
     capacity: 10,
     imageSrc: '',
-    createdAt: new Date(),
+    createdAt: Date.now(),
     type: PlaceType.Basement,
   },
   {
@@ -30,7 +30,7 @@ const FAKE_DATA: IPlace[] = [
     description: '',
     capacity: 3,
     imageSrc: '',
-    createdAt: new Date(),
+    createdAt: Date.now(),
     type: PlaceType.Bunker,
   },
   {
@@ -39,7 +39,7 @@ const FAKE_DATA: IPlace[] = [
     description: '',
     capacity: 500,
     imageSrc: '',
-    createdAt: new Date(),
+    createdAt: Date.now(),
     type: PlaceType.Metro,
   },
 ];
