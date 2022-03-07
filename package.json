@@ -17,6 +17,7 @@
     "@types/node": "^16.11.26",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
+    "@uiw/react-md-editor": "^3.9.9",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "pluralize": "^8.0.0",
