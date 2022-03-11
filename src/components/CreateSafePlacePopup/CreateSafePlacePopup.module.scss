@@ -6,3 +6,10 @@
     margin-bottom: 32px;
   }
 }
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 30px;
+  align-items: center;
+}

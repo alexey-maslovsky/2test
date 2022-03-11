@@ -1,0 +1,13 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.error {
+  border: 1px solid red;
+}
+
+.helperText {
+  margin-top: 10px;
+  color: red;
+}
