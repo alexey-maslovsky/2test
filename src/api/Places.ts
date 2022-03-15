@@ -15,6 +15,8 @@ export interface IPlace {
   imageSrc: string;
   createdAt: number;
   type: PlaceType;
+  likes: number;
+  isLiked: boolean;
 }
 
 const MILLISECONDS_IN_ONE_YEAR = 1000 * 60 * 60 * 24 * 365; // 1 year
@@ -28,10 +30,12 @@ const generateFakeDataItem = (index: number) => {
     imageSrc: 'https://media.npr.org/assets/img/2022/02/25/gettyimages-1372620623_custom-4895d389987758c4dc1bfc6d5752ffd3eb55efc4-s1100-c50.jpg',
     createdAt: Date.now() - (random(1, 20, true) * MILLISECONDS_IN_ONE_YEAR),
     type: Object.values(PlaceType)[random(0, 2, false)],
+    likes: random(0, 100),
+    isLiked: random(0, 3) === 0,
   };
 };
 
-const FAKE_DATA: IPlace[] = Array
+let FAKE_DATA: IPlace[] = Array
   .from({ length: 1000 })
   .map((item, index) => generateFakeDataItem(index));
 
@@ -50,14 +54,49 @@ export default class PlacesApi {
     });
   }
 
-  public create(data: ICreateSafePlaceFormData): Promise<void> {
+  public async create(data: ICreateSafePlaceFormData): Promise<IPlace> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        FAKE_DATA.push({
+        const newPlace = {
           ...data,
           id: `id-${FAKE_DATA.length + 1}`,
           createdAt: Date.now(),
-        });
+          likes: 0,
+          isLiked: false,
+        };
+
+        FAKE_DATA = [
+          ...FAKE_DATA,
+          newPlace,
+        ];
+
+        // throw new Error('Out of memory');
+
+        resolve(newPlace);
+      }, 1000);
+    });
+  }
+
+  public like(id: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        FAKE_DATA = FAKE_DATA.map((place) => ({
+          ...place,
+          likes: place.id === id ? place.likes + 1 : place.likes,
+        }));
+
+        reject();
+      }, 1000);
+    });
+  }
+
+  public dislike(id: string): Promise<void> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        FAKE_DATA = FAKE_DATA.map((place) => ({
+          ...place,
+          likes: place.id === id ? place.likes - 1 : place.likes,
+        }));
 
         resolve();
       }, 1000);

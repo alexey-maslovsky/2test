@@ -10,7 +10,7 @@ import validateCreateSafePlaceForm, { ICreateSafePlaceFormData, IValidateCreateS
 import AppMarkdownEditor from '../AppMarkdownEditor/AppMarkdownEditor';
 
 interface ICreateSafePlacePopupProps {
-  onSave: (data: ICreateSafePlaceFormData) => void;
+  onSave: (data: ICreateSafePlaceFormData) => Promise<void>;
 }
 
 const CreateSafePlacePopup: FC<ICreateSafePlacePopupProps> = ({ onSave }) => {
@@ -21,6 +21,7 @@ const CreateSafePlacePopup: FC<ICreateSafePlacePopupProps> = ({ onSave }) => {
   const [type, setType] = useState(PlaceType.Basement);
   const [capacity, setCapacity] = useState(10);
   const [errors, setErrors] = useState<IValidateCreateSafePlaceFormResult>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOnClose = () => {
     dispatch(closeSafePlacePopup());
@@ -53,7 +54,17 @@ const CreateSafePlacePopup: FC<ICreateSafePlacePopupProps> = ({ onSave }) => {
 
   const isCreateDisabled = () => {
     const newErrors = validateCreateSafePlaceForm({ address, capacity, description, imageSrc, type });
-    return Object.keys(newErrors).length > 0;
+    return Object.keys(newErrors).length > 0 || isLoading;
+  };
+
+  const handleOnSave = async () => {
+    setIsLoading(true);
+
+    try {
+      await onSave({ address, capacity, description, imageSrc, type });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -100,15 +111,15 @@ const CreateSafePlacePopup: FC<ICreateSafePlacePopupProps> = ({ onSave }) => {
           onBlur={handleOnBlur('capacity')}
         />
         <div className={styles.footer}>
-          <Button>Cancel</Button>
+          <Button onClick={handleOnClose}>Cancel</Button>
           <Button
             variant="contained"
             color="primary"
             disabled={isCreateDisabled()}
-            onClick={() => onSave({ address, capacity, description, imageSrc, type })}
+            onClick={handleOnSave}
           >
-            Create Safe Place
-        </Button>
+            {isLoading ? 'Loading...' : 'Create Safe Place'}
+          </Button>
         </div>
       </div>
 

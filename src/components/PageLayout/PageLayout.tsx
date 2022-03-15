@@ -1,9 +1,10 @@
-import { AppBar, Button, Container } from '@mui/material';
-import { FC } from 'react';
+import { Alert, AppBar, Button, Container, Snackbar } from '@mui/material';
+import { FC, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { IPlace } from '../../api/Places';
 import { RootState } from '../../store';
-import { createPlace } from '../../store/Places/ActionCreators';
+import { createPlace, getPlaces } from '../../store/Places/ActionCreators';
 import { closeSafePlacePopup, openSafePlacePopup } from '../../store/PopupManagement/ActionCreators';
 import CreateSafePlacePopup from '../CreateSafePlacePopup/CreateSafePlacePopup';
 import { ICreateSafePlaceFormData } from '../CreateSafePlacePopup/validateCreateSafePlaceForm';
@@ -12,6 +13,8 @@ import styles from './PageLayout.module.scss';
 const PageLayout: FC = ({ children }) => {
   const navigate = useNavigate();
   const { isCreateSafePlacePopupOpen } = useSelector((state: RootState) => state.popupManagement);
+  const [isSuccessToasterShown, setIsSuccessToasterShown] = useState(false);
+  const [isErrorToasterShown, setIsErrorToasterShown] = useState(false);
   const dispatch = useDispatch();
 
   const handleGoToHome = () => {
@@ -23,8 +26,24 @@ const PageLayout: FC = ({ children }) => {
   };
 
   const handleOnSave = async (data: ICreateSafePlaceFormData) => {
-    await dispatch(createPlace(data));
-    dispatch(closeSafePlacePopup());
+    try {
+      const newPlace: IPlace = await (dispatch(createPlace(data)) as any).unwrap();
+      setIsSuccessToasterShown(true);
+      dispatch(closeSafePlacePopup());
+      dispatch(getPlaces());
+
+      navigate(`/places/${newPlace.id}`);
+    } catch (error) {
+      setIsErrorToasterShown(true);
+    }
+  };
+
+  const handleSuccessToasterClose = () => {
+    setIsSuccessToasterShown(false);
+  };
+
+  const handleErrorToasterClose = () => {
+    setIsErrorToasterShown(false);
   };
 
   return (
@@ -37,6 +56,16 @@ const PageLayout: FC = ({ children }) => {
       </AppBar>
       {children}
       {isCreateSafePlacePopupOpen && <CreateSafePlacePopup onSave={handleOnSave} />}
+      <Snackbar open={isSuccessToasterShown} autoHideDuration={2000} onClose={handleSuccessToasterClose} >
+        <Alert>
+          New Safe Place Has Been Created!
+        </Alert>
+      </Snackbar>
+      <Snackbar open={isErrorToasterShown} autoHideDuration={2000} onClose={handleErrorToasterClose} >
+        <Alert severity="error">
+          Ooops something went wrong! :(
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
