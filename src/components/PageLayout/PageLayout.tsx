@@ -1,9 +1,9 @@
 import { Alert, AppBar, Button, Container, Snackbar } from '@mui/material';
 import { FC, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { IPlace } from '../../api/Places';
-import { RootState } from '../../store';
+import { RootState, useAppDispatch } from '../../store';
 import { createPlace, getPlaces } from '../../store/Places/ActionCreators';
 import { closeSafePlacePopup, openSafePlacePopup } from '../../store/PopupManagement/ActionCreators';
 import CreateSafePlacePopup from '../CreateSafePlacePopup/CreateSafePlacePopup';
@@ -15,7 +15,7 @@ const PageLayout: FC = ({ children }) => {
   const { isCreateSafePlacePopupOpen } = useSelector((state: RootState) => state.popupManagement);
   const [isSuccessToasterShown, setIsSuccessToasterShown] = useState(false);
   const [isErrorToasterShown, setIsErrorToasterShown] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const handleGoToHome = () => {
     navigate('/');
@@ -27,7 +27,7 @@ const PageLayout: FC = ({ children }) => {
 
   const handleOnSave = async (data: ICreateSafePlaceFormData) => {
     try {
-      const newPlace: IPlace = await (dispatch(createPlace(data)) as any).unwrap();
+      const newPlace: IPlace = await dispatch(createPlace(data)).unwrap();
       setIsSuccessToasterShown(true);
       dispatch(closeSafePlacePopup());
       dispatch(getPlaces());

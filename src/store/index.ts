@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
+import { useDispatch } from 'react-redux';
 import placeDetailsReducer from './PlaceDetails/Reducer';
 import placesReducer from './Places/Reducer';
 import popupManagementReducer from './PopupManagement/Reducer';
@@ -13,3 +14,4 @@ export const store = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+export const useAppDispatch = () => useDispatch<AppDispatch>();
